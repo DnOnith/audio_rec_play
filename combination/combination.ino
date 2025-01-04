@@ -5,12 +5,12 @@
 #include <Wire.h>
 #include "SSD1306Ascii.h"
 #include "SSD1306AsciiWire.h"
-
+//jegliche Benutzen Bibliotheken einbinden
 
 TMRpcm audio;
 RTC_DS3231 rtc;
 SSD1306AsciiWire oled;
-
+//initialisiert Audioaufnahme, die Echtzeituhr und das OLED-Display
 
 const int mic_pin = A8;
 const int speaker_pin = 8;
@@ -19,12 +19,14 @@ const int button_1 = 4;
 const int button_2 = 2;
 
 int mic_mode = 0;
+char file_name[50] = "rec.wav";´
+//Variablen für Aufnahme und Wiedergabe
 
 int taster_plus = A2;
 int taster_minus = A0;
 int taster_weiter = A1;
 
-//Variablen
+
 int angehzeit_h = 0;
 int angehzeit_min = 0;
 int angehdatum_y = 2024;
@@ -34,9 +36,8 @@ int modul = 1;
 String angehzeit = "";
 String angehdatum = "";
 
+//Variablen für die Zeiteinheit
 
-
-char file_name[50] = "rec.wav";
 
 #define SD_CSPin 48
 #define I2C_ADDRESS 0x3C
@@ -55,27 +56,30 @@ void wait_min(int mins) {
   }
   Serial.println();
   return ;
-}
+} //Eine wartefunktion für Minuten statt Millisekunden
 
 int start_rec() {
   if (SD.exists(file_name) == true){
     SD.remove(file_name);
-  }
-  audio.startRecording(file_name, sample_rate, mic_pin);
+  } //Es gibt immer nur eine Audiodatei gleichzeitig, ergo wird die alte gelöscht, wenn eine neue gemacht werden soll
+  audio.startRecording(file_name, sample_rate, mic_pin); //startet Aufnahme
   Serial.println("Start Recording");
-  mic_mode = 1;
+  mic_mode = 1; //Mikrophon im Modus 1 bedeutet, dass aufgenommen wird
   return 1;
 }
 
 int stop_rec() {
-  audio.stopRecording(file_name);
+  audio.stopRecording(file_name); //stoppt die Aufnahme
   Serial.println("Stop Recording");
-  mic_mode = 0;
+  mic_mode = 0; //Mikrophon im Modus 0 bedeutet, dass nicht aufgenommen wird
   return 0;
 }
 
 void play_rec() {
-  audio.play(file_name);
+  audio.play(file_name); //spielt aufnahme ab
+  while (audio.isPlaying() == 1) {
+      delay(1); 
+    } //Während Audio spielt, wird pausiert
 }
 
 void refresh()
@@ -120,7 +124,7 @@ void refresh()
       oled.println("(Jahr)");
       break;
   }
-}
+}// erneuert die Anzeige auf dem OLED-Display mit aktuellen Angaben
 
 void setup() {
   // put your setup code here, to run once:
@@ -160,8 +164,8 @@ void setup() {
   //OLED start
   oled.setFont(System5x7); // Auswahl der Schriftart
   refresh();
-}
- 
+} //kein tatsächlich spannender Code, ungefähr alle Module werden einmal initialisiert und zur benutzung vorbereitet
+
 void loop() {
   if (digitalRead(button_1) == HIGH) {
     if (mic_mode == 0) {
@@ -171,14 +175,11 @@ void loop() {
     } else {
       Serial.println("Unknown Microphone Mode");
     }
-  }
+  } //Knopf 1 wird gedrückt. Wenn nicht aufgenommen wird, wird aufnahme gestartet, wenn aufgenommen wird, wird gestoppt (Funktioniert über den Mikrophonmodus)
 
   if (digitalRead(button_2) == HIGH) {
     play_rec();
-    while (audio.isPlaying() == 1) {
-      delay(1); 
-    }
-  }
+  } //Spielt aufnahme ab. 
   
   Serial.print("Mic Mode: ");
   Serial.println(mic_mode);
@@ -197,7 +198,7 @@ void loop() {
   if (String(Datum) == angehdatum && String(Zeit) == angehzeit)
   {
     //Hier eingeben was beim Alarm passieren soll
-    Serial.println("Alarm! Alaarm!");
+    play_rec();
   }
 
   //Wenn taster_weiter gedrückt ist
@@ -297,9 +298,9 @@ void loop() {
       case 5:
         angehdatum_y -= 1;
         break;
-    }
+    } // diese große funktion geht nur mit unterschiedlichen Monatslängen und Schaltjahren um.
     refresh();
-    delay(100);
+    delay(500);
   }
  //Ende
 }
