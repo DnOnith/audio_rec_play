@@ -13,13 +13,13 @@ SSD1306AsciiWire oled;
 //initialisiert Audioaufnahme, die Echtzeituhr und das OLED-Display
 
 const int mic_pin = A8;
-const int speaker_pin = 8;
+const int speaker_pin = 9;
 const int sample_rate = 16000;
 const int button_1 = 4;
 const int button_2 = 2;
 
 int mic_mode = 0;
-char file_name[50] = "rec.wav";´
+char file_name[50] = "rec.wav";
 //Variablen für Aufnahme und Wiedergabe
 
 int taster_plus = A2;
@@ -193,12 +193,22 @@ void loop() {
   char Zeit[] = "hh:mm:ss"; // Zeit speichern
   aktuell.toString(Datum);
   aktuell.toString(Zeit);
+  Serial.println(Datum);
+  Serial.println(Zeit);
   
   //Alarm
-  if (String(Datum) == angehdatum && String(Zeit) == angehzeit)
-  {
+  //if (String(Datum) == angehdatum && String(Zeit) == angehzeit)
+  //{
+  if (aktuell.year() == angehdatum_y &&
+     aktuell.month() == angehdatum_m &&
+     aktuell.day() == angehdatum_d &&
+     aktuell.hour() == angehzeit_h &&
+     aktuell.minute() == angehzeit_min &&
+     aktuell.second() == 00) {
     //Hier eingeben was beim Alarm passieren soll
+    Serial.println("ALARM! ALAAAAAAARM!");
     play_rec();
+    
   }
 
   //Wenn taster_weiter gedrückt ist
@@ -300,7 +310,7 @@ void loop() {
         break;
     } // diese große funktion geht nur mit unterschiedlichen Monatslängen und Schaltjahren um.
     refresh();
-    delay(500);
   }
  //Ende
+ delay(500);
 }
