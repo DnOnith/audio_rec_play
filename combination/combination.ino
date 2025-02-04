@@ -13,7 +13,7 @@ SSD1306AsciiWire oled;
 //initialisiert Audioaufnahme, die Echtzeituhr und das OLED-Display
 
 const int mic_pin = A8;
-const int speaker_pin = 9;
+const int speaker_pin = 11;
 const int sample_rate = 16000;
 const int button_1 = 4;
 const int button_2 = 2;

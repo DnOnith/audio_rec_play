@@ -2,7 +2,7 @@
 #include <SD.h>
 #include <SPI.h>
 TMRpcm audio;
-const int mic_pin = A0;
+const int mic_pin = A8;
 const int speaker_pin = 9;
 const int sample_rate = 16000;
 const int button_1 = 4;
@@ -14,7 +14,7 @@ int mic_mode = 0;
 
 char file_name[50] = "rec.wav";
 
-#define SD_CSPin 10
+#define SD_CSPin 53
 // delay function for with serial log.
 void wait_min(int mins) {
   int count = 0;
